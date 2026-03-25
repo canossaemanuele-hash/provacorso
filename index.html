@@ -5,6 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Barber App Premium</title>
     
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#d4af37">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then((reg) => console.log('✅ Service Worker registrato! Scope:', reg.scope))
+                    .catch((err) => console.error('❌ Errore Service Worker:', err));
+            });
+        }
+    </script>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -26,7 +40,7 @@
         /* --- HEADER --- */
         header { background-color: var(--surface-color); padding: 20px; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
         header h1 { color: var(--accent-color); font-size: 1.5rem; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; user-select: none; }
-        header p { color: var(--text-secondary); font-size: 0.85rem; margin-top: 5px; font-weight: 500; }
+        header p { color: var(--text-secondary); font-size: 0.85rem; margin-top: 5px; font-weight: 500; transition: color 0.3s; }
 
         .container { padding: 20px; max-width: 600px; margin: 0 auto; }
         h2 { font-size: 1.2rem; margin-bottom: 15px; border-left: 4px solid var(--accent-color); padding-left: 10px; }
