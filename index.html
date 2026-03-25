@@ -8,6 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
+        /* --- VARIABILI E RESET --- */
         :root {
             --bg-color: #0f1014;
             --surface-color: #1c1d22;
@@ -15,176 +16,325 @@
             --accent-color: #d4af37;
             --text-primary: #ffffff;
             --text-secondary: #a0a0a0;
-            --error-color: #e74c3c;
             --success-color: #2ecc71;
+            --error-color: #e74c3c;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg-color); color: var(--text-primary); padding-bottom: 40px; }
         
+        /* --- HEADER --- */
         header { background-color: var(--surface-color); padding: 20px; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
-        header h1 { color: var(--accent-color); font-size: 1.5rem; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; }
+        header h1 { color: var(--accent-color); font-size: 1.5rem; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; user-select: none; }
+        header p { color: var(--text-secondary); font-size: 0.85rem; margin-top: 5px; font-weight: 500; }
 
         .container { padding: 20px; max-width: 600px; margin: 0 auto; }
         h2 { font-size: 1.2rem; margin-bottom: 15px; border-left: 4px solid var(--accent-color); padding-left: 10px; }
 
-        /* Form e Input */
-        .booking-section, .admin-section { background-color: var(--surface-color); padding: 20px; border-radius: 16px; margin-bottom: 20px; }
+        /* --- SERVIZI E FORM --- */
+        .services-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px; }
+        .service-card { background-color: var(--surface-color); padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05); }
+        .service-info h3 { font-size: 1rem; margin-bottom: 4px; }
+        .service-info p { font-size: 0.8rem; color: var(--text-secondary); }
+        .service-price { font-weight: bold; color: var(--accent-color); font-size: 1.1rem; }
+
+        .booking-section, .admin-section { background-color: var(--surface-color); padding: 20px; border-radius: 16px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); margin-bottom: 20px; }
         .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 8px; font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; }
-        .form-group input, .form-group select { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid var(--surface-color-light); background-color: var(--surface-color-light); color: var(--text-primary); font-size: 1rem; outline: none; }
-        
-        .btn-submit { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent-color), #f9d976); color: #000; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; text-transform: uppercase; cursor: pointer; }
-        
-        /* Area Admin */
-        #admin-panel { display: none; margin-top: 20px; }
-        .reservation-card { background: var(--surface-color-light); padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 4px solid var(--accent-color); }
-        .res-name { font-weight: bold; font-size: 1.1rem; margin-bottom: 5px; }
-        .res-info { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 10px; }
-        .res-actions { display: flex; gap: 10px; }
-        .btn-wa { background: #25D366; color: white; padding: 8px 12px; border-radius: 8px; text-decoration: none; font-size: 0.8rem; font-weight: bold; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;}
+        .form-group input, .form-group select { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid var(--surface-color-light); background-color: var(--surface-color-light); color: var(--text-primary); font-size: 1rem; outline: none; transition: border-color 0.3s; }
+        .form-group input:focus, .form-group select:focus { border-color: var(--accent-color); }
+        ::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
 
-        /* Modal Login */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
-        .modal-content { background: var(--surface-color); padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; }
+        .btn-submit { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent-color), #f9d976); color: #000; border: none; border-radius: 12px; font-size: 1.05rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: transform 0.1s; }
+        .btn-submit:active { transform: scale(0.98); }
+        .btn-submit:disabled { background: #555; color: #888; cursor: not-allowed; transform: none; }
 
-        .success-message { display: none; color: var(--success-color); text-align: center; font-weight: bold; }
+        /* --- AREA ADMIN --- */
+        #admin-panel { display: none; margin-top: 10px; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .btn-logout { background: rgba(231, 76, 60, 0.1); color: var(--error-color); border: 1px solid rgba(231, 76, 60, 0.3); padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: bold; cursor: pointer; }
+        
+        .reservation-card { background: var(--surface-color-light); padding: 18px; border-radius: 12px; margin-bottom: 12px; border-left: 4px solid var(--accent-color); position: relative; }
+        .res-name { font-weight: 800; font-size: 1.15rem; margin-bottom: 8px; color: var(--text-primary); }
+        .res-info { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 15px; line-height: 1.5; }
+        .res-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn-action { padding: 10px 14px; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: bold; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 5px; flex-grow: 1; text-align: center; justify-content: center; }
+        .btn-wa { background: rgba(37, 211, 102, 0.15); color: #25D366; }
+        .btn-call { background: rgba(212, 175, 55, 0.15); color: var(--accent-color); }
+        .btn-delete { background: rgba(231, 76, 60, 0.15); color: var(--error-color); flex-grow: 0; }
+
+        /* --- MODAL LOGIN --- */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .modal-content { background: var(--surface-color); padding: 30px; border-radius: 20px; width: 90%; max-width: 380px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); animation: slideUp 0.3s ease; border: 1px solid var(--surface-color-light); }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* --- TOAST NOTIFICATIONS --- */
+        #toast-container { position: fixed; bottom: 30px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 9999; }
+        .toast { background: var(--surface-color-light); padding: 16px 20px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); font-size: 0.95rem; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 12px; border-left: 5px solid var(--success-color); animation: slideIn 0.4s forwards; }
+        .toast.error { border-left-color: var(--error-color); }
+        @keyframes slideIn { from { transform: translateX(120%); } to { transform: translateX(0); } }
+        @keyframes fadeOut { to { opacity: 0; transform: translateY(10px); } }
     </style>
 </head>
 <body>
 
     <header>
         <h1 id="secret-title">L'Atelier del Barbiere</h1>
-        <p>Area Clienti</p>
+        <p id="header-subtitle">Stile, precisione e classe</p>
     </header>
 
     <div class="container">
+        
         <div id="client-view">
-            <h2>Prenota il tuo stile</h2>
+            <h2>I Nostri Servizi</h2>
+            <div class="services-list">
+                <div class="service-card"><div class="service-info"><h3>Taglio Classico</h3><p>Shampoo, taglio a forbice/macchinetta e piega</p></div><div class="service-price">20€</div></div>
+                <div class="service-card"><div class="service-info"><h3>Regolazione Barba</h3><p>Scolpitura, panno caldo e oli essenziali</p></div><div class="service-price">15€</div></div>
+                <div class="service-card"><div class="service-info"><h3>Combo VIP</h3><p>Taglio capelli + Barba spa + Trattamento viso</p></div><div class="service-price">40€</div></div>
+            </div>
+
+            <h2>Prenota il tuo appuntamento</h2>
             <div class="booking-section">
                 <form id="bookingForm">
-                    <div class="form-group"><label>Nome</label><input type="text" id="nome" required></div>
-                    <div class="form-group"><label>Telefono</label><input type="tel" id="telefono" required></div>
-                    <div class="form-group"><label>Data e Orario</label><input type="datetime-local" id="data-ora" required></div>
                     <div class="form-group">
-                        <label>Servizio</label>
+                        <label>Nome Completo</label>
+                        <input type="text" id="nome" placeholder="Es. Mario Rossi" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Numero di Telefono</label>
+                        <input type="tel" id="telefono" placeholder="Es. 340 1234567" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Data e Orario</label>
+                        <input type="datetime-local" id="data-ora" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Scegli il Servizio</label>
                         <select id="servizio" required>
+                            <option value="" disabled selected>Seleziona un'opzione...</option>
                             <option value="Taglio Classico">Taglio Classico - 20€</option>
                             <option value="Regolazione Barba">Regolazione Barba - 15€</option>
                             <option value="Combo VIP">Combo VIP - 40€</option>
                         </select>
                     </div>
-                    <button type="submit" class="btn-submit" id="btn-prenota">Prenota Ora</button>
+                    <button type="submit" class="btn-submit" id="btn-prenota">Conferma Prenotazione</button>
                 </form>
-                <div id="successMessage" class="success-message"><br>✅ Prenotazione inviata!</div>
             </div>
         </div>
 
         <div id="admin-panel">
-            <h2>Pannello Gestione Prenotazioni</h2>
-            <div id="lista-prenotazioni">
-                <p>Caricamento...</p>
+            <div class="admin-header">
+                <h2 style="margin:0; border:none; padding:0;">Richieste Ricevute</h2>
+                <button class="btn-logout" onclick="eseguiLogout()">Esci 🚪</button>
             </div>
-            <button onclick="location.reload()" style="background:none; border:none; color:var(--accent-color); margin-top:20px; cursor:pointer;">Logout / Torna alla Home</button>
+            
+            <div id="lista-prenotazioni">
+                <p style="color: var(--text-secondary); text-align:center; margin-top: 20px;">Sincronizzazione dati in corso...</p>
+            </div>
         </div>
+
     </div>
 
     <div id="loginModal" class="modal">
         <div class="modal-content">
-            <h2 style="border:none; text-align:center;">Accesso Admin</h2>
-            <div class="form-group"><label>Email</label><input type="email" id="admin-email"></div>
-            <div class="form-group"><label>Password</label><input type="password" id="admin-password"></div>
-            <button class="btn-submit" onclick="loginAdmin()">Entra</button>
-            <button onclick="closeModal()" style="background:none; border:none; color:var(--text-secondary); width:100%; margin-top:15px; cursor:pointer;">Annulla</button>
+            <h2 style="border:none; text-align:center; padding:0; margin-bottom: 20px;">Accesso Riservato 🔐</h2>
+            <div class="form-group"><label>Email Admin</label><input type="email" id="admin-email" placeholder="La tua email Supabase"></div>
+            <div class="form-group"><label>Password</label><input type="password" id="admin-password" placeholder="••••••••"></div>
+            <button class="btn-submit" id="btn-login" onclick="loginAdmin()">Accedi al Pannello</button>
+            <button onclick="closeModal()" style="background:none; border:none; color:var(--text-secondary); width:100%; margin-top:15px; cursor:pointer; font-weight:600;">Annulla</button>
         </div>
     </div>
 
+    <div id="toast-container"></div>
+
     <script>
+        // ==========================================
+        // 1. CONFIGURAZIONE SUPABASE
+        // ==========================================
         const urlBarbiere = 'https://ajbjpcrndqrpwjshdvzs.supabase.co';
         const keyBarbiere = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqYmpwY3JuZHFycHdqc2hkdnpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0MDE1MDAsImV4cCI6MjA4OTk3NzUwMH0.HJ_yxq3485c__7idsGa31aeL9jLjUFAQaDzert1ZWME';
         const dbBarbiere = window.supabase.createClient(urlBarbiere, keyBarbiere);
 
-        // --- LOGICA CLIENTE (INVIO) ---
+        // ==========================================
+        // 2. SISTEMA DI NOTIFICHE TOAST (MIGLIORATO)
+        // ==========================================
+        function showToast(message, isError = false) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${isError ? 'error' : ''}`;
+            toast.innerHTML = `<span>${isError ? '❌' : '✅'}</span> <div>${message}</div>`;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.4s ease forwards';
+                setTimeout(() => toast.remove(), 400);
+            }, 3500);
+        }
+
+        // ==========================================
+        // 3. LOGICA CLIENTE: INVIO PRENOTAZIONE
+        // ==========================================
         const form = document.getElementById('bookingForm');
+        const dataOraInput = document.getElementById('data-ora');
+        
+        // Imposta data minima ad oggi
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        dataOraInput.min = now.toISOString().slice(0,16);
+
+        // Controllo Domeniche e Orari Notturni
+        dataOraInput.addEventListener('change', function() {
+            if (!this.value) return;
+            const dataSelezionata = new Date(this.value);
+            const giornoDellaSettimana = dataSelezionata.getDay(); // 0 = Domenica
+            const ora = dataSelezionata.getHours();
+
+            if (giornoDellaSettimana === 0) {
+                showToast("Siamo chiusi la Domenica! Scegli un altro giorno.", true);
+                this.value = '';
+            } else if (ora < 9 || ora >= 19) {
+                showToast("Siamo aperti dalle 09:00 alle 19:00!", true);
+                this.value = '';
+            }
+        });
+
+        // Invio form
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-prenota');
-            btn.disabled = true; btn.textContent = "Invio...";
+            btn.disabled = true; btn.textContent = "Elaborazione...";
 
             const { error } = await dbBarbiere.from('prenotazioni').insert([{
-                nome: document.getElementById('nome').value,
-                telefono: document.getElementById('telefono').value,
+                nome: document.getElementById('nome').value.trim(),
+                telefono: document.getElementById('telefono').value.trim(),
                 data_ora: document.getElementById('data-ora').value,
                 servizio: document.getElementById('servizio').value
             }]);
 
-            if (error) { alert("Errore invio"); btn.disabled = false; }
-            else { 
-                form.style.display = 'none'; 
-                document.getElementById('successMessage').style.display = 'block'; 
+            if (error) { 
+                showToast("Errore di connessione. Riprova.", true); 
+                btn.disabled = false; btn.textContent = "Conferma Prenotazione";
+            } else { 
+                showToast("Prenotazione confermata! Ti aspettiamo.");
+                form.reset(); // Svuota il form dopo l'invio
+                btn.disabled = false; btn.textContent = "Conferma Prenotazione";
             }
         });
 
-        // --- LOGICA CLICK SEGRETO ---
+        // ==========================================
+        // 4. LOGICA ACCESSO SEGRETO ADMIN
+        // ==========================================
         let clicks = 0;
+        let clickTimer;
         document.getElementById('secret-title').addEventListener('click', () => {
             clicks++;
+            clearTimeout(clickTimer);
+            clickTimer = setTimeout(() => { clicks = 0; }, 1000); // Resetta i click dopo 1 secondo
+            
             if (clicks === 3) {
                 document.getElementById('loginModal').style.display = 'flex';
                 clicks = 0;
             }
-            setTimeout(() => { clicks = 0; }, 2000);
         });
 
         function closeModal() { document.getElementById('loginModal').style.display = 'none'; }
 
-        // --- LOGICA LOGIN ADMIN ---
-        async function loginAdmin() {
-            const email = document.getElementById('admin-email').value;
-            const password = document.getElementById('admin-password').value;
+        // ==========================================
+        // 5. AUTENTICAZIONE E GESTIONE SESSIONE
+        // ==========================================
+        async function controllaSessione() {
+            const { data: { session } } = await dbBarbiere.auth.getSession();
+            if (session) { attivaModoAdmin(); }
+        }
 
+        async function loginAdmin() {
+            const email = document.getElementById('admin-email').value.trim();
+            const password = document.getElementById('admin-password').value.trim();
+            const btn = document.getElementById('btn-login');
+
+            if(!email || !password) { showToast("Inserisci email e password.", true); return; }
+
+            btn.disabled = true; btn.textContent = "Accesso...";
             const { data, error } = await dbBarbiere.auth.signInWithPassword({ email, password });
 
-            if (error) { alert("Accesso negato: " + error.message); }
-            else {
+            if (error) { 
+                showToast("Credenziali errate.", true); 
+                btn.disabled = false; btn.textContent = "Accedi al Pannello";
+            } else {
                 closeModal();
-                document.getElementById('client-view').style.display = 'none';
-                document.getElementById('admin-panel').style.display = 'block';
-                document.querySelector('header p').textContent = "Dashboard Amministratore";
-                caricaPrenotazioni();
+                showToast("Accesso Admin effettuato.");
+                attivaModoAdmin();
+                btn.disabled = false; btn.textContent = "Accedi al Pannello";
             }
         }
 
-        // --- CARICAMENTO DATI (SOLO PER ADMIN) ---
+        async function eseguiLogout() {
+            await dbBarbiere.auth.signOut();
+            location.reload(); // Ricarica la pagina per tornare alla vista cliente
+        }
+
+        function attivaModoAdmin() {
+            document.getElementById('client-view').style.display = 'none';
+            document.getElementById('admin-panel').style.display = 'block';
+            document.getElementById('header-subtitle').textContent = "Dashboard Gestione Appuntamenti";
+            document.getElementById('header-subtitle').style.color = "var(--success-color)";
+            caricaPrenotazioni();
+        }
+
+        // ==========================================
+        // 6. DASHBOARD: LETTURA E CANCELLAZIONE
+        // ==========================================
         async function caricaPrenotazioni() {
             const container = document.getElementById('lista-prenotazioni');
-            const { data, error } = await dbBarbiere.from('prenotazioni').select('*').order('data_ora', { ascending: true });
+            
+            const { data, error } = await dbBarbiere
+                .from('prenotazioni')
+                .select('*')
+                .order('data_ora', { ascending: true }); // Ordina per data (le più vicine prima)
 
-            if (error) { container.innerHTML = "Errore nel caricamento dati."; return; }
-            if (data.length === 0) { container.innerHTML = "Nessuna prenotazione presente."; return; }
+            if (error) { container.innerHTML = "<p style='color:var(--error-color);'>Errore caricamento dati.</p>"; return; }
+            if (data.length === 0) { container.innerHTML = "<p style='color:var(--text-secondary); text-align:center;'>Nessun appuntamento in agenda.</p>"; return; }
 
             container.innerHTML = "";
             data.forEach(res => {
-                const dataFormat = new Date(res.data_ora).toLocaleString('it-IT', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'});
-                const cleanTel = res.telefono.replace(/\s/g, '');
+                // Formatta la data in modo leggibile (Es. "24 Ottobre 2024, 15:30")
+                const objData = new Date(res.data_ora);
+                const dataFormat = objData.toLocaleDateString('it-IT', { day:'2-digit', month:'long', year:'numeric'});
+                const oraFormat = objData.toLocaleTimeString('it-IT', { hour:'2-digit', minute:'2-digit' });
                 
+                const cleanTel = res.telefono.replace(/\s/g, '');
+                // Genera messaggio preimpostato per WhatsApp
+                const msgWA = encodeURIComponent(`Ciao ${res.nome}! Ti scrivo dal Barber Shop per confermare il tuo appuntamento del ${dataFormat} alle ${oraFormat} per il servizio: ${res.servizio}. Ti aspettiamo!`);
+
                 const card = document.createElement('div');
                 card.className = "reservation-card";
                 card.innerHTML = `
                     <div class="res-name">${res.nome}</div>
                     <div class="res-info">
-                        📅 ${dataFormat}<br>
+                        🗓️ <b>${dataFormat}</b> alle <b>${oraFormat}</b><br>
                         ✂️ ${res.servizio}<br>
                         📞 ${res.telefono}
                     </div>
                     <div class="res-actions">
-                        <a href="https://wa.me/${cleanTel}" target="_blank" class="btn-wa">WhatsApp</a>
-                        <a href="tel:${cleanTel}" class="btn-wa" style="background:var(--accent-color); color:black;">Chiama</a>
+                        <a href="https://wa.me/39${cleanTel}?text=${msgWA}" target="_blank" class="btn-action btn-wa">💬 WhatsApp</a>
+                        <a href="tel:${cleanTel}" class="btn-action btn-call">📞 Chiama</a>
+                        <button onclick="eliminaPrenotazione('${res.id}')" class="btn-action btn-delete">🗑️</button>
                     </div>
                 `;
                 container.appendChild(card);
             });
         }
+
+        async function eliminaPrenotazione(id) {
+            if(confirm("Sei sicuro di voler cancellare questa prenotazione?")) {
+                const { error } = await dbBarbiere.from('prenotazioni').delete().eq('id', id);
+                if(error) { showToast("Errore durante l'eliminazione.", true); }
+                else { showToast("Prenotazione eliminata."); caricaPrenotazioni(); }
+            }
+        }
+
+        // Avvia il controllo sessione all'apertura del sito
+        window.onload = controllaSessione;
     </script>
 </body>
 </html>
