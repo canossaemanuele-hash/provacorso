@@ -32,7 +32,6 @@
             padding-bottom: 40px;
         }
 
-        /* --- Header --- */
         header {
             background-color: var(--surface-color);
             padding: 20px;
@@ -56,7 +55,6 @@
             margin-top: 5px;
         }
 
-        /* --- Contenitore Principale --- */
         .container {
             padding: 20px;
             max-width: 600px;
@@ -71,7 +69,6 @@
             padding-left: 10px;
         }
 
-        /* --- Sezione Servizi --- */
         .services-list {
             display: flex;
             flex-direction: column;
@@ -105,7 +102,6 @@
             font-size: 1.1rem;
         }
 
-        /* --- Modulo di Prenotazione --- */
         .booking-section {
             background-color: var(--surface-color);
             padding: 20px;
@@ -147,7 +143,6 @@
             cursor: pointer;
         }
 
-        /* --- Bottone Prenota --- */
         .btn-submit {
             width: 100%;
             padding: 16px;
@@ -169,7 +164,6 @@
             transform: scale(0.98);
         }
 
-        /* --- Messaggi --- */
         .success-message {
             display: none;
             background-color: rgba(46, 204, 113, 0.1);
@@ -267,11 +261,9 @@
     </div>
 
     <script>
-        // 1. Inizializza Supabase con i tuoi dati reali
-        // Ho ricavato l'URL decodificando il tuo token JWT!
+        // Inizializzazione pulita (Dichiarata una volta sola!)
         const supabaseUrl = 'https://ajbjpcrndqrpwjshdvzs.supabase.co';
         const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqYmpwY3JuZHFycHdqc2hkdnpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0MDE1MDAsImV4cCI6MjA4OTk3NzUwMH0.HJ_yxq3485c__7idsGa31aeL9jLjUFAQaDzert1ZWME';
-        
         const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -280,29 +272,24 @@
             const errorMessage = document.getElementById('errorMessage');
             const btnSubmit = form.querySelector('.btn-submit');
             
-            // Imposta la data minima ad "oggi" per evitare prenotazioni nel passato
             const dataOraInput = document.getElementById('data-ora');
             const now = new Date();
             now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
             dataOraInput.min = now.toISOString().slice(0,16);
 
-            // 2. Gestisci l'invio del modulo
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 errorMessage.style.display = 'none';
 
-                // Raccogli i dati inseriti dal cliente
                 const nomeCliente = document.getElementById('nome').value;
                 const telefonoCliente = document.getElementById('telefono').value;
                 const dataOraCliente = document.getElementById('data-ora').value;
                 const servizioCliente = document.getElementById('servizio').value;
                 
-                // Disabilita il bottone durante l'invio
                 btnSubmit.textContent = 'Invio in corso...';
                 btnSubmit.style.opacity = '0.7';
                 btnSubmit.disabled = true;
 
-                // 3. Invia i dati alla tabella 'prenotazioni' su Supabase
                 const { data, error } = await supabase
                     .from('prenotazioni')
                     .insert([
@@ -314,17 +301,13 @@
                         }
                     ]);
 
-                // 4. Gestisci il risultato
                 if (error) {
                     console.error("Errore Supabase:", error);
                     errorMessage.style.display = 'block';
-                    
-                    // Ripristina il bottone
                     btnSubmit.textContent = 'Prenota Ora';
                     btnSubmit.style.opacity = '1';
                     btnSubmit.disabled = false;
                 } else {
-                    // Successo! Nascondi il modulo e mostra il messaggio
                     form.style.display = 'none';
                     successMessage.style.display = 'block';
                 }
