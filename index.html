@@ -15,133 +15,176 @@
             --accent-color: #d4af37;
             --text-primary: #ffffff;
             --text-secondary: #a0a0a0;
+            --error-color: #e74c3c;
+            --success-color: #2ecc71;
         }
 
-        * {
-            box-sizing: border-box; margin: 0; padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg-color); color: var(--text-primary); padding-bottom: 40px; }
+        
         header { background-color: var(--surface-color); padding: 20px; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
-        header h1 { color: var(--accent-color); font-size: 1.5rem; text-transform: uppercase; letter-spacing: 2px; }
-        header p { color: var(--text-secondary); font-size: 0.85rem; margin-top: 5px; }
+        header h1 { color: var(--accent-color); font-size: 1.5rem; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; }
 
         .container { padding: 20px; max-width: 600px; margin: 0 auto; }
         h2 { font-size: 1.2rem; margin-bottom: 15px; border-left: 4px solid var(--accent-color); padding-left: 10px; }
 
-        .services-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px; }
-        .service-card { background-color: var(--surface-color); padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05); }
-        .service-info h3 { font-size: 1rem; margin-bottom: 4px; }
-        .service-info p { font-size: 0.8rem; color: var(--text-secondary); }
-        .service-price { font-weight: bold; color: var(--accent-color); font-size: 1.1rem; }
-
-        .booking-section { background-color: var(--surface-color); padding: 20px; border-radius: 16px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        /* Form e Input */
+        .booking-section, .admin-section { background-color: var(--surface-color); padding: 20px; border-radius: 16px; margin-bottom: 20px; }
         .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-secondary); }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; }
         .form-group input, .form-group select { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid var(--surface-color-light); background-color: var(--surface-color-light); color: var(--text-primary); font-size: 1rem; outline: none; }
-        .form-group input:focus, .form-group select:focus { border-color: var(--accent-color); }
-        ::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+        
+        .btn-submit { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent-color), #f9d976); color: #000; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; text-transform: uppercase; cursor: pointer; }
+        
+        /* Area Admin */
+        #admin-panel { display: none; margin-top: 20px; }
+        .reservation-card { background: var(--surface-color-light); padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 4px solid var(--accent-color); }
+        .res-name { font-weight: bold; font-size: 1.1rem; margin-bottom: 5px; }
+        .res-info { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 10px; }
+        .res-actions { display: flex; gap: 10px; }
+        .btn-wa { background: #25D366; color: white; padding: 8px 12px; border-radius: 8px; text-decoration: none; font-size: 0.8rem; font-weight: bold; }
 
-        .btn-submit { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent-color), #f9d976); color: #000000; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 700; text-transform: uppercase; cursor: pointer; margin-top: 10px; }
-        .btn-submit:active { transform: scale(0.98); }
+        /* Modal Login */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-content { background: var(--surface-color); padding: 30px; border-radius: 20px; width: 90%; max-width: 400px; }
 
-        .success-message { display: none; background-color: rgba(46, 204, 113, 0.1); color: #2ecc71; padding: 20px; border-radius: 10px; border: 1px solid #2ecc71; text-align: center; margin-top: 10px; font-weight: bold; }
-        .error-message { display: none; color: #e74c3c; text-align: center; margin-top: 15px; font-size: 0.9rem; }
+        .success-message { display: none; color: var(--success-color); text-align: center; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>L'Atelier del Barbiere</h1>
-        <p>Stile, precisione e classe</p>
+        <h1 id="secret-title">L'Atelier del Barbiere</h1>
+        <p>Area Clienti</p>
     </header>
 
     <div class="container">
-        <h2>I Nostri Servizi</h2>
-        <div class="services-list">
-            <div class="service-card"><div class="service-info"><h3>Taglio Classico</h3><p>Shampoo, taglio a forbice/macchinetta e piega</p></div><div class="service-price">20€</div></div>
-            <div class="service-card"><div class="service-info"><h3>Regolazione Barba</h3><p>Scolpitura, panno caldo e oli essenziali</p></div><div class="service-price">15€</div></div>
-            <div class="service-card"><div class="service-info"><h3>Combo VIP</h3><p>Taglio capelli + Barba spa + Trattamento viso</p></div><div class="service-price">40€</div></div>
+        <div id="client-view">
+            <h2>Prenota il tuo stile</h2>
+            <div class="booking-section">
+                <form id="bookingForm">
+                    <div class="form-group"><label>Nome</label><input type="text" id="nome" required></div>
+                    <div class="form-group"><label>Telefono</label><input type="tel" id="telefono" required></div>
+                    <div class="form-group"><label>Data e Orario</label><input type="datetime-local" id="data-ora" required></div>
+                    <div class="form-group">
+                        <label>Servizio</label>
+                        <select id="servizio" required>
+                            <option value="Taglio Classico">Taglio Classico - 20€</option>
+                            <option value="Regolazione Barba">Regolazione Barba - 15€</option>
+                            <option value="Combo VIP">Combo VIP - 40€</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-submit" id="btn-prenota">Prenota Ora</button>
+                </form>
+                <div id="successMessage" class="success-message"><br>✅ Prenotazione inviata!</div>
+            </div>
         </div>
 
-        <h2>Prenota il tuo appuntamento</h2>
-        <div class="booking-section">
-            <form id="bookingForm">
-                <div class="form-group"><label>Nome Completo</label><input type="text" id="nome" required></div>
-                <div class="form-group"><label>Numero di Telefono</label><input type="tel" id="telefono" required></div>
-                <div class="form-group"><label>Data e Orario</label><input type="datetime-local" id="data-ora" required></div>
-                <div class="form-group"><label>Scegli il Servizio</label>
-                    <select id="servizio" required>
-                        <option value="" disabled selected>Seleziona un'opzione...</option>
-                        <option value="Taglio Classico">Taglio Classico - 20€</option>
-                        <option value="Regolazione Barba">Regolazione Barba - 15€</option>
-                        <option value="Combo VIP">Combo VIP - 40€</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn-submit">Prenota Ora</button>
-                <div id="errorMessage" class="error-message">C'è stato un problema. Riprova.</div>
-            </form>
-            
-            <div id="successMessage" class="success-message">✅ Prenotazione confermata!<br><br>Ti aspettiamo in negozio.</div>
+        <div id="admin-panel">
+            <h2>Pannello Gestione Prenotazioni</h2>
+            <div id="lista-prenotazioni">
+                <p>Caricamento...</p>
+            </div>
+            <button onclick="location.reload()" style="background:none; border:none; color:var(--accent-color); margin-top:20px; cursor:pointer;">Logout / Torna alla Home</button>
+        </div>
+    </div>
+
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <h2 style="border:none; text-align:center;">Accesso Admin</h2>
+            <div class="form-group"><label>Email</label><input type="email" id="admin-email"></div>
+            <div class="form-group"><label>Password</label><input type="password" id="admin-password"></div>
+            <button class="btn-submit" onclick="loginAdmin()">Entra</button>
+            <button onclick="closeModal()" style="background:none; border:none; color:var(--text-secondary); width:100%; margin-top:15px; cursor:pointer;">Annulla</button>
         </div>
     </div>
 
     <script>
-        // HO CAMBIATO I NOMI DELLE VARIABILI COSÌ NON C'È PIÙ CONFLITTO!
         const urlBarbiere = 'https://ajbjpcrndqrpwjshdvzs.supabase.co';
         const keyBarbiere = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqYmpwY3JuZHFycHdqc2hkdnpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0MDE1MDAsImV4cCI6MjA4OTk3NzUwMH0.HJ_yxq3485c__7idsGa31aeL9jLjUFAQaDzert1ZWME';
         const dbBarbiere = window.supabase.createClient(urlBarbiere, keyBarbiere);
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const form = document.getElementById('bookingForm');
-            const successMessage = document.getElementById('successMessage');
-            const errorMessage = document.getElementById('errorMessage');
-            const btnSubmit = form.querySelector('.btn-submit');
-            
-            const dataOraInput = document.getElementById('data-ora');
-            const now = new Date();
-            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-            dataOraInput.min = now.toISOString().slice(0,16);
+        // --- LOGICA CLIENTE (INVIO) ---
+        const form = document.getElementById('bookingForm');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-prenota');
+            btn.disabled = true; btn.textContent = "Invio...";
 
-            form.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                errorMessage.style.display = 'none';
+            const { error } = await dbBarbiere.from('prenotazioni').insert([{
+                nome: document.getElementById('nome').value,
+                telefono: document.getElementById('telefono').value,
+                data_ora: document.getElementById('data-ora').value,
+                servizio: document.getElementById('servizio').value
+            }]);
 
-                const nomeCliente = document.getElementById('nome').value;
-                const telefonoCliente = document.getElementById('telefono').value;
-                const dataOraCliente = document.getElementById('data-ora').value;
-                const servizioCliente = document.getElementById('servizio').value;
-                
-                btnSubmit.textContent = 'Invio in corso...';
-                btnSubmit.style.opacity = '0.7';
-                btnSubmit.disabled = true;
-
-                // Uso il nuovo nome "dbBarbiere" per inviare i dati
-                const { data, error } = await dbBarbiere
-                    .from('prenotazioni')
-                    .insert([
-                        { 
-                            nome: nomeCliente, 
-                            telefono: telefonoCliente, 
-                            data_ora: dataOraCliente, 
-                            servizio: servizioCliente 
-                        }
-                    ]);
-
-                if (error) {
-                    console.error("Errore Supabase:", error);
-                    errorMessage.style.display = 'block';
-                    btnSubmit.textContent = 'Prenota Ora';
-                    btnSubmit.style.opacity = '1';
-                    btnSubmit.disabled = false;
-                } else {
-                    form.style.display = 'none';
-                    successMessage.style.display = 'block';
-                }
-            });
+            if (error) { alert("Errore invio"); btn.disabled = false; }
+            else { 
+                form.style.display = 'none'; 
+                document.getElementById('successMessage').style.display = 'block'; 
+            }
         });
+
+        // --- LOGICA CLICK SEGRETO ---
+        let clicks = 0;
+        document.getElementById('secret-title').addEventListener('click', () => {
+            clicks++;
+            if (clicks === 3) {
+                document.getElementById('loginModal').style.display = 'flex';
+                clicks = 0;
+            }
+            setTimeout(() => { clicks = 0; }, 2000);
+        });
+
+        function closeModal() { document.getElementById('loginModal').style.display = 'none'; }
+
+        // --- LOGICA LOGIN ADMIN ---
+        async function loginAdmin() {
+            const email = document.getElementById('admin-email').value;
+            const password = document.getElementById('admin-password').value;
+
+            const { data, error } = await dbBarbiere.auth.signInWithPassword({ email, password });
+
+            if (error) { alert("Accesso negato: " + error.message); }
+            else {
+                closeModal();
+                document.getElementById('client-view').style.display = 'none';
+                document.getElementById('admin-panel').style.display = 'block';
+                document.querySelector('header p').textContent = "Dashboard Amministratore";
+                caricaPrenotazioni();
+            }
+        }
+
+        // --- CARICAMENTO DATI (SOLO PER ADMIN) ---
+        async function caricaPrenotazioni() {
+            const container = document.getElementById('lista-prenotazioni');
+            const { data, error } = await dbBarbiere.from('prenotazioni').select('*').order('data_ora', { ascending: true });
+
+            if (error) { container.innerHTML = "Errore nel caricamento dati."; return; }
+            if (data.length === 0) { container.innerHTML = "Nessuna prenotazione presente."; return; }
+
+            container.innerHTML = "";
+            data.forEach(res => {
+                const dataFormat = new Date(res.data_ora).toLocaleString('it-IT', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'});
+                const cleanTel = res.telefono.replace(/\s/g, '');
+                
+                const card = document.createElement('div');
+                card.className = "reservation-card";
+                card.innerHTML = `
+                    <div class="res-name">${res.nome}</div>
+                    <div class="res-info">
+                        📅 ${dataFormat}<br>
+                        ✂️ ${res.servizio}<br>
+                        📞 ${res.telefono}
+                    </div>
+                    <div class="res-actions">
+                        <a href="https://wa.me/${cleanTel}" target="_blank" class="btn-wa">WhatsApp</a>
+                        <a href="tel:${cleanTel}" class="btn-wa" style="background:var(--accent-color); color:black;">Chiama</a>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
     </script>
 </body>
 </html>
