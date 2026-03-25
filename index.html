@@ -3,314 +3,333 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EC Web App - Digital Partner</title>
+    <title>Barber App Premium</title>
     
-    <meta property="og:title" content="EC Web App - Digitalizza il tuo business locale">
-    <meta property="og:description" content="Sviluppo Web App su misura per professionisti. Zero abbonamenti costosi, gestione appuntamenti via WhatsApp.">
-    <meta property="og:type" content="website">
-    
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="EC Web App">
-    <meta name="theme-color" content="#F8FAFC">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        /* ==========================================
-           VARIABILI E PALETTE TECH / BUSINESS
-           ========================================== */
+        /* --- CSS: Variabili e Reset --- */
         :root {
-            --primary: #4F46E5;       
-            --primary-light: #EEF2FF;
-            --primary-hover: #4338CA;
-            --accent: #10B981;        
-            --accent-light: #D1FAE5;
-            
-            --text-dark: #1E293B;     
-            --text-muted: #64748B;    
-            --bg-color: #F8FAFC;      
-            --card-bg: #FFFFFF;       
-            
-            --border-light: #E2E8F0;
-            --shadow-soft: 0 10px 30px rgba(30, 41, 59, 0.05);
-            --shadow-glow: 0 10px 25px rgba(79, 70, 229, 0.25);
-            --radius-lg: 24px;
-            --radius-md: 16px;
+            --bg-color: #0f1014;
+            --surface-color: #1c1d22;
+            --surface-color-light: #2a2c33;
+            --accent-color: #d4af37;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
         }
 
-        body { 
-            font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-dark); 
-            margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; 
-            -webkit-font-smoothing: antialiased;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        header { 
-            background: var(--card-bg); width: 100%; text-align: center; 
-            padding: 2.5rem 0 3.5rem 0; border-bottom: 1px solid var(--border-light); 
-        }
-        h1 { margin: 0; font-weight: 400; font-size: 26px; color: var(--text-dark); cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
-        h1 strong { color: var(--primary); font-weight: 800; letter-spacing: -0.5px; }
-
-        nav { 
-            display: flex; justify-content: center; gap: 4px; margin-top: -25px; 
-            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            padding: 8px; border-radius: 40px; box-shadow: 0 10px 25px rgba(0,0,0,0.06); 
-            flex-wrap: wrap; z-index: 100; border: 1px solid rgba(226, 232, 240, 0.8);
-            position: sticky; top: 15px;
-        }
-        nav button { 
-            background: transparent; border: none; padding: 12px 18px; border-radius: 30px; 
-            font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; 
-            transition: all 0.3s ease; font-family: inherit;
-        }
-        nav button:hover { background: var(--bg-color); color: var(--primary); }
-        nav button.active { background: var(--primary); color: white; box-shadow: var(--shadow-glow); }
-
-        main { width: 95%; max-width: 1000px; margin: 40px auto; }
-
-        .section { display: none; animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
-        .section.active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .info-card { background: var(--card-bg); padding: 40px 30px; border-radius: var(--radius-lg); box-shadow: var(--shadow-soft); border: 1px solid var(--border-light); margin-bottom: 30px; }
-        h2.section-title { color: var(--primary); margin-top: 0; font-size: 26px; border-bottom: 2px solid var(--primary-light); padding-bottom: 15px; margin-bottom: 10px; font-weight: 800; letter-spacing: -0.5px; }
-        .section-subtitle { font-size: 15px; color: var(--text-muted); margin-bottom: 30px; line-height: 1.5; }
-
-        /* ==========================================
-           GRIGLIA PACCHETTI (PRICING MODERN UI)
-           ========================================== */
-        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 20px; align-items: stretch; }
-        
-        .pricing-card { 
-            background: var(--card-bg); border: 1px solid var(--border-light); border-radius: var(--radius-md); 
-            padding: 30px 25px; display: flex; flex-direction: column; position: relative; 
-            transition: transform 0.3s ease, box-shadow 0.3s ease; 
-        }
-        .pricing-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-soft); }
-        
-        /* Stile specifico per il pacchetto PRO (In Evidenza) */
-        .pricing-card.popular { border: 2px solid var(--primary); box-shadow: var(--shadow-glow); transform: scale(1.03); z-index: 10; }
-        .pricing-card.popular:hover { transform: scale(1.03) translateY(-5px); }
-        
-        .badge-popular { 
-            position: absolute; top: -14px; left: 50%; transform: translateX(-50%); 
-            background: var(--primary); color: white; padding: 6px 14px; border-radius: 20px; 
-            font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; box-shadow: var(--shadow-glow);
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            padding-bottom: 40px;
         }
 
-        .p-tier { font-size: 20px; font-weight: 800; color: var(--text-dark); margin-bottom: 8px; }
-        .p-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 25px; min-height: 40px; line-height: 1.5; }
-        
-        .p-price { margin-bottom: 25px; padding-bottom: 25px; border-bottom: 1px solid var(--border-light); }
-        .p-setup { font-size: 32px; font-weight: 800; color: var(--text-dark); letter-spacing: -1px; }
-        .p-setup span { font-size: 14px; color: var(--text-muted); font-weight: 500; letter-spacing: normal; }
-        .p-monthly { font-size: 16px; color: var(--primary); font-weight: 700; margin-top: 8px; display: flex; align-items: center; gap: 6px;}
-        .p-monthly::before { content: '🔄'; font-size: 14px; }
-
-        .p-features { list-style: none; padding: 0; margin: 0 0 30px 0; flex-grow: 1; }
-        .p-features li { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.4; font-weight: 500;}
-        .p-features li::before { content: '✓'; color: var(--accent); font-weight: bold; font-size: 16px; }
-        
-        .btn-pricing { 
-            width: 100%; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 700; 
-            cursor: pointer; transition: 0.3s; text-align: center; border: 2px solid var(--primary-light); 
-            background: var(--primary-light); color: var(--primary); font-family: inherit;
+        /* --- Header --- */
+        header {
+            background-color: var(--surface-color);
+            padding: 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
-        .btn-pricing.filled { background: var(--primary); color: white; border-color: var(--primary); box-shadow: var(--shadow-glow); }
-        .btn-pricing:hover { background: var(--border-light); border-color: var(--border-light); }
-        .btn-pricing.filled:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
+
+        header h1 {
+            color: var(--accent-color);
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        /* --- Contenitore Principale --- */
+        .container {
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+            border-left: 4px solid var(--accent-color);
+            padding-left: 10px;
+        }
+
+        /* --- Sezione Servizi --- */
+        .services-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .service-card {
+            background-color: var(--surface-color);
+            padding: 15px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .service-info h3 {
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .service-info p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .service-price {
+            font-weight: bold;
+            color: var(--accent-color);
+            font-size: 1.1rem;
+        }
+
+        /* --- Modulo di Prenotazione --- */
+        .booking-section {
+            background-color: var(--surface-color);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid var(--surface-color-light);
+            background-color: var(--surface-color-light);
+            color: var(--text-primary);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--accent-color);
+        }
+
+        ::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+
+        /* --- Bottone Prenota --- */
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--accent-color), #f9d976);
+            color: #000000;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: transform 0.1s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+
+        /* --- Messaggi --- */
+        .success-message {
+            display: none;
+            background-color: rgba(46, 204, 113, 0.1);
+            color: #2ecc71;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #2ecc71;
+            text-align: center;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .error-message {
+            display: none;
+            color: #e74c3c;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
 
     <header>
-        <h1 onclick="clickSegreto()">EC <strong>Web App</strong></h1>
-        <p style="margin: 5px 0 0 0; color: var(--text-muted); font-size: 15px; font-weight: 500;">Digital Partner per il Business Locale</p>
+        <h1>L'Atelier del Barbiere</h1>
+        <p>Stile, precisione e classe</p>
     </header>
 
-    <nav id="main-nav">
-        <button class="tab-link active" onclick="apriSezione('home', this)">Home</button>
-        <button class="tab-link" onclick="apriSezione('il-problema', this)">Perché un'App?</button>
-        <button class="tab-link" id="nav-btn-pacchetti" onclick="apriSezione('pacchetti', this)">Pacchetti</button>
-        <button class="tab-link" id="nav-prenota" onclick="apriSezione('inizia-ora', this)" style="color: var(--primary);">🚀 Inizia Ora</button>
+    <div class="container">
         
-        <button id="btn-nav-admin" class="tab-link" style="display:none; color:#EF4444;" onclick="apriSezione('admin', this)">🛡️ Admin</button>
-    </nav>
-
-    <main>
-        
-        <div id="home" class="section active">
-            <div style="background: var(--card-bg); padding: 50px 30px; border-radius: var(--radius-lg); box-shadow: var(--shadow-soft); text-align: center; border: 1px solid var(--border-light); margin-bottom: 30px;">
-                
-                <div style="display: inline-block; background: var(--primary-light); color: var(--primary); font-size: 13px; font-weight: 800; padding: 6px 14px; border-radius: 20px; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 0.5px;">
-                    Sviluppo Web & PWA
+        <h2>I Nostri Servizi</h2>
+        <div class="services-list">
+            <div class="service-card">
+                <div class="service-info">
+                    <h3>Taglio Classico</h3>
+                    <p>Shampoo, taglio a forbice/macchinetta e piega</p>
                 </div>
-                
-                <h2 style="font-size: 34px; font-weight: 800; color: var(--text-dark); margin: 0 0 15px 0; line-height: 1.2; letter-spacing: -1px;">
-                    Digitalizza la tua attività.<br>
-                    <span style="color: var(--primary);">Senza abbonamenti costosi.</span>
-                </h2>
-                
-                <p style="font-size: 16px; color: var(--text-muted); line-height: 1.6; margin-bottom: 35px; max-width: 500px; margin-left: auto; margin-right: auto; font-weight: 400;">
-                    Trasformo il tuo business locale con una Web App su misura. Ricevi prenotazioni, gestisci i clienti via WhatsApp e dimentica per sempre le agende cartacee.
-                </p>
-                
-                <button onclick="apriSezione('pacchetti', document.getElementById('nav-btn-pacchetti'))" style="background: var(--primary); color: white; border: none; padding: 16px 32px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: var(--shadow-glow);">
-                    Vedi i Pacchetti
-                </button>
-
-                <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 45px;">
-                    <span style="padding: 10px 18px; background: var(--bg-color); border: 1px solid var(--border-light); border-radius: 30px; font-size: 13px; font-weight: 600; color: var(--text-dark); display: inline-flex; align-items: center; gap: 8px;">📱 App Installabile</span>
-                    <span style="padding: 10px 18px; background: var(--accent-light); border: 1px solid transparent; border-radius: 30px; font-size: 13px; font-weight: 700; color: var(--accent); display: inline-flex; align-items: center; gap: 8px;">🚀 Zero Costi Fissi</span>
-                    <span style="padding: 10px 18px; background: var(--bg-color); border: 1px solid var(--border-light); border-radius: 30px; font-size: 13px; font-weight: 600; color: var(--text-dark); display: inline-flex; align-items: center; gap: 8px;">💬 Gestione WhatsApp</span>
-                    <span style="padding: 10px 18px; background: var(--bg-color); border: 1px solid var(--border-light); border-radius: 30px; font-size: 13px; font-weight: 600; color: var(--text-dark); display: inline-flex; align-items: center; gap: 8px;">⚡ 100% Personalizzata</span>
+                <div class="service-price">20€</div>
+            </div>
+            <div class="service-card">
+                <div class="service-info">
+                    <h3>Regolazione Barba</h3>
+                    <p>Scolpitura, panno caldo e oli essenziali</p>
                 </div>
+                <div class="service-price">15€</div>
+            </div>
+            <div class="service-card">
+                <div class="service-info">
+                    <h3>Combo VIP</h3>
+                    <p>Taglio capelli + Barba spa + Trattamento viso</p>
+                </div>
+                <div class="service-price">40€</div>
             </div>
         </div>
 
-        <div id="il-problema" class="section">
-            <div class="info-card">
-                <h2 class="section-title">Perché passare a un'App?</h2>
-                <p class="section-subtitle">Basta agende cartacee caotiche o abbonamenti a software costosi.</p>
+        <h2>Prenota il tuo appuntamento</h2>
+        <div class="booking-section">
+            <form id="bookingForm">
                 
-                <ul style="list-style: none; padding: 0; margin: 0;">
-                    <li style="margin-bottom: 20px; background: var(--bg-color); padding: 25px; border-radius: var(--radius-md); border: 1px solid var(--border-light);">
-                        <div style="font-size: 18px; color: #EF4444; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">🛑 Il costo dei vecchi metodi</div>
-                        <div style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">L'agenda di carta non invia promemoria (causando appuntamenti saltati). I grandi portali web, invece, ti chiedono abbonamenti mensili altissimi e trattengono commissioni sui tuoi clienti.</div>
-                    </li>
-                    <li style="margin-bottom: 20px; background: var(--bg-color); padding: 25px; border-radius: var(--radius-md); border: 1px solid var(--border-light);">
-                        <div style="font-size: 18px; color: var(--primary); font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">💡 La tua App, le tue regole</div>
-                        <div style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">Sviluppo una Web App (PWA) cucita sulle tue reali esigenze e salvabile sulla Home del telefono. <b>Nessun costo fisso per il software</b>, l'infrastruttura è tua. Paghi solo il mio lavoro e i costi vivi del server.</div>
-                    </li>
-                    <li style="margin-bottom: 10px; background: var(--bg-color); padding: 25px; border-radius: var(--radius-md); border: 1px solid var(--border-light); border-left: 4px solid var(--accent);">
-                        <div style="font-size: 18px; color: var(--accent); font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">💬 Il potere di WhatsApp</div>
-                        <div style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">Avrai un'area privata (Dashboard) da cui gestire i contatti. Ricevi una richiesta? Ti basta un click per rispondere direttamente al cliente su WhatsApp, azzerando le distanze e fidelizzandolo all'istante.</div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        <div id="pacchetti" class="section">
-            <h2 style="text-align: center; color: var(--text-dark); font-size: 28px; font-weight: 800; margin-bottom: 10px; letter-spacing: -1px;">Scegli la tua soluzione</h2>
-            <p style="text-align: center; color: var(--text-muted); margin-bottom: 40px; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.5;">
-                Tre pacchetti chiari, nessun costo nascosto. Paga il setup una volta sola, e affida a me la gestione mensile.
-            </p>
-
-            <div class="pricing-grid">
-                
-                <div class="pricing-card">
-                    <div class="p-tier">Starter</div>
-                    <div class="p-desc">Per chi vuole digitalizzarsi e gestire i clienti in modo professionale.</div>
-                    
-                    <div class="p-price">
-                        <div class="p-setup">250€ <span>/ Setup unico</span></div>
-                        <div class="p-monthly">+ 49€ / mese per gestione</div>
-                    </div>
-                    
-                    <ul class="p-features">
-                        <li>Creazione Web App Personalizzata</li>
-                        <li>Salvabile sulla Home (PWA)</li>
-                        <li>Dashboard Admin per i contatti</li>
-                        <li>Dominio e Hosting inclusi</li>
-                        <li>Assistenza tecnica prioritaria</li>
-                    </ul>
-                    
-                    <button class="btn-pricing" onclick="prenotaPacchetto('Pacchetto Starter')">Seleziona Starter</button>
+                <div class="form-group">
+                    <label for="nome">Nome Completo</label>
+                    <input type="text" id="nome" placeholder="Es. Mario Rossi" required>
                 </div>
 
-                <div class="pricing-card popular">
-                    <div class="badge-popular">Il Più Scelto</div>
-                    <div class="p-tier" style="color: var(--primary);">Pro Growth</div>
-                    <div class="p-desc">L'infrastruttura web unita a una spinta estetica per i tuoi social.</div>
-                    
-                    <div class="p-price">
-                        <div class="p-setup">350€ <span>/ Setup unico</span></div>
-                        <div class="p-monthly">+ 149€ / mese per gestione</div>
-                    </div>
-                    
-                    <ul class="p-features">
-                        <li><b>Tutto il pacchetto Starter</b></li>
-                        <li><b>1 Shooting fotografico iniziale</b> in negozio</li>
-                        <li><b>2 Post / Reel al mese</b> per i tuoi social</li>
-                        <li>Integrazione avanzata WhatsApp</li>
-                    </ul>
-                    
-                    <button class="btn-pricing filled" onclick="prenotaPacchetto('Pacchetto Pro Growth')">Seleziona Pro</button>
+                <div class="form-group">
+                    <label for="telefono">Numero di Telefono</label>
+                    <input type="tel" id="telefono" placeholder="Es. 333 1234567" required>
                 </div>
 
-                <div class="pricing-card">
-                    <div class="p-tier">VIP All-In</div>
-                    <div class="p-desc">Delega completamente a me la presenza digitale della tua attività.</div>
-                    
-                    <div class="p-price">
-                        <div class="p-setup">450€ <span>/ Setup unico</span></div>
-                        <div class="p-monthly">+ 299€ / mese per gestione</div>
-                    </div>
-                    
-                    <ul class="p-features">
-                        <li><b>Tutto il pacchetto Pro</b></li>
-                        <li><b>Shooting fotografico mensile</b> ricorrente</li>
-                        <li><b>8 Post / Reel al mese</b> (2 a settimana)</li>
-                        <li>Piano editoriale strategico</li>
-                    </ul>
-                    
-                    <button class="btn-pricing" onclick="prenotaPacchetto('Pacchetto VIP All-In')">Seleziona VIP</button>
+                <div class="form-group">
+                    <label for="data-ora">Data e Orario</label>
+                    <input type="datetime-local" id="data-ora" required>
                 </div>
 
+                <div class="form-group">
+                    <label for="servizio">Scegli il Servizio</label>
+                    <select id="servizio" required>
+                        <option value="" disabled selected>Seleziona un'opzione...</option>
+                        <option value="Taglio Classico">Taglio Classico - 20€</option>
+                        <option value="Regolazione Barba">Regolazione Barba - 15€</option>
+                        <option value="Combo VIP">Combo VIP (Taglio + Barba) - 40€</option>
+                        <option value="Solo Shampoo e Piega">Solo Shampoo e Piega - 10€</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-submit">Prenota Ora</button>
+                <div id="errorMessage" class="error-message">C'è stato un problema. Riprova.</div>
+            </form>
+            
+            <div id="successMessage" class="success-message">
+                ✅ Prenotazione confermata!<br><br>Ti aspettiamo in negozio.
             </div>
         </div>
 
-        <div id="inizia-ora" class="section">
-            <div class="info-card">
-                <h2 class="section-title">Inizia Ora</h2>
-                <p style="color: var(--text-muted); font-size: 15px;">Modulo di contatto e database Supabase in arrivo nel prossimo step...</p>
-            </div>
-        </div>
-
-        <div id="admin" class="section">
-            <div class="info-card" style="border-color: #EF4444;">
-                <h2 class="section-title" style="color: #EF4444; border-bottom-color: #FEE2E2;">🛡️ Area Admin EC Web App</h2>
-                <p style="color: var(--text-muted); font-size: 15px;">La tua Dashboard segreta arriverà presto!</p>
-            </div>
-        </div>
-
-    </main>
+    </div>
 
     <script>
-        window.apriSezione = function(id, el, bloccaScroll = false) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('#main-nav .tab-link').forEach(b => b.classList.remove('active'));
-            
-            const targetSection = document.getElementById(id);
-            if(targetSection) targetSection.classList.add('active');
-            if (el) el.classList.add('active');
-            
-            if(!bloccaScroll) {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        };
+        // 1. Inizializza Supabase con i tuoi dati reali
+        // Ho ricavato l'URL decodificando il tuo token JWT!
+        const supabaseUrl = 'https://ajbjpcrndqrpwjshdvzs.supabase.co';
+        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqYmpwY3JuZHFycHdqc2hkdnpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0MDE1MDAsImV4cCI6MjA4OTk3NzUwMH0.HJ_yxq3485c__7idsGa31aeL9jLjUFAQaDzert1ZWME';
+        
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
 
-        // Funzione per i bottoni dei pacchetti: porta alla sezione Inizia Ora
-        window.prenotaPacchetto = function(nomePacchetto) {
-            const tabPrenota = document.getElementById('nav-prenota');
-            apriSezione('inizia-ora', tabPrenota);
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('bookingForm');
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            const btnSubmit = form.querySelector('.btn-submit');
             
-            // In futuro qui inseriremo il codice per pre-compilare la select del Form, 
-            // esattamente come hai fatto per la Dott.ssa Canossa!
-            alert("Hai cliccato " + nomePacchetto + "!\nNel prossimo step collegheremo questo tasto al Modulo Contatti.");
-        };
+            // Imposta la data minima ad "oggi" per evitare prenotazioni nel passato
+            const dataOraInput = document.getElementById('data-ora');
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            dataOraInput.min = now.toISOString().slice(0,16);
 
-        let adminClicks = 0; let adminTimer;
-        window.clickSegreto = function() {
-            adminClicks++; clearTimeout(adminTimer);
-            adminTimer = setTimeout(() => { adminClicks = 0; }, 1000); 
-            if (adminClicks === 3) {
-                document.getElementById('btn-nav-admin').style.display = 'inline-block';
-                apriSezione('admin', document.getElementById('btn-nav-admin'));
-                adminClicks = 0;
-            }
-        };
+            // 2. Gestisci l'invio del modulo
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                errorMessage.style.display = 'none';
+
+                // Raccogli i dati inseriti dal cliente
+                const nomeCliente = document.getElementById('nome').value;
+                const telefonoCliente = document.getElementById('telefono').value;
+                const dataOraCliente = document.getElementById('data-ora').value;
+                const servizioCliente = document.getElementById('servizio').value;
+                
+                // Disabilita il bottone durante l'invio
+                btnSubmit.textContent = 'Invio in corso...';
+                btnSubmit.style.opacity = '0.7';
+                btnSubmit.disabled = true;
+
+                // 3. Invia i dati alla tabella 'prenotazioni' su Supabase
+                const { data, error } = await supabase
+                    .from('prenotazioni')
+                    .insert([
+                        { 
+                            nome: nomeCliente, 
+                            telefono: telefonoCliente, 
+                            data_ora: dataOraCliente, 
+                            servizio: servizioCliente 
+                        }
+                    ]);
+
+                // 4. Gestisci il risultato
+                if (error) {
+                    console.error("Errore Supabase:", error);
+                    errorMessage.style.display = 'block';
+                    
+                    // Ripristina il bottone
+                    btnSubmit.textContent = 'Prenota Ora';
+                    btnSubmit.style.opacity = '1';
+                    btnSubmit.disabled = false;
+                } else {
+                    // Successo! Nascondi il modulo e mostra il messaggio
+                    form.style.display = 'none';
+                    successMessage.style.display = 'block';
+                }
+            });
+        });
     </script>
 </body>
 </html>
